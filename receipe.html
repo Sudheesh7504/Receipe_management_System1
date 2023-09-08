@@ -12,23 +12,30 @@
       display: grid;
       place-content: center;
     }
-    .user {
+
+    .receipe {
       display: flex;
+      flex-direction: column;
       background-color: white;
-      gap: 1rem;
       padding: 0.8rem;
       border-radius: 0.8rem;
       box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     }
 
     .receipe-pic {
-      height: 5rem;
-      aspect-ratio: 1 / 1;
-      border-radius: 50%;
+      width: 100%;
+      max-height: 250px;
+      object-fit: cover;
+      border-radius: 0.8rem 0.8rem 0 0;
     }
 
     .receipe-name {
       margin-top: 0px;
+      text-align: center;
+      background-color: orange;
+      color: #fff;
+      padding: 5px;
+      border-radius: 0 0 0.8rem 0.8rem;
     }
 
     .receipes-container {
@@ -60,41 +67,84 @@
       display: flex;
       justify-content: space-between;
     }
+
+    .ingredients,
+    .instructions {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .addReceipe {
+      padding: 10px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .searchReceipe {
+      padding: 10px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .deleteButton {
+      padding: 10px;
+      background-color: red;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
   </style>
   <body>
-    <h1>Welcome to Receipe Management System 🎊</h1>
+    <h1>
+      <marquee behavior="scroll" direction="left" scrollamount="3">
+        Welcome to Receipe Management System
+      </marquee>
+    </h1>
+
     <div class="add-Receipe-form">
       <input class="search-receipe" type="text" placeholder="search-receipe" />
-      <button onclick="searchreceipe()">🔍Search🔎</button>
+      <button class="searchReceipe" onclick="searchreceipe()">Search🔎</button>
 
-      <input class=".receipe-name" type="text" placeholder="Name" />
-      <input class=".receipe-avatar" type="text" placeholder="Picture URL" />
-      <input class=".receipe-cuisine" type="text" placeholder="cusisine" />
+      <input class="receipeName" type="text" placeholder="Name" />
+
+      <input class="receipe-avatar" type="text" placeholder="Picture URL" />
+      <input class="receipe-cuisine" type="text" placeholder="cuisine" />
       <input
-        class=".receipe-ingredients"
+        class="receipe-ingredients"
         type="text"
-        placeholder="receipe-ingredients"
+        placeholder="recipe-ingredients"
       />
       <input
         class="receipe-instructions"
         type="text"
-        placeholder="receipe-instructions"
+        placeholder="recipe-instructions"
       />
 
-      <button onclick=" addreceipe()">addreceipe</button>
+      <button class="addReceipe" onclick="addreceipe()">addrecipe</button>
 
       <section class="receipes-container"></section>
       <div class="buttons">
         <button onclick="prevPage()"><</button>
-        <span class="page-button-container">
-          <!-- <button onclick="nav(1)">1</button>
-        <button onclick="nav(2)">2</button> -->
-        </span>
-
+        <span class="page-button-container"> </span>
         <button onclick="nextPage()">></button>
       </div>
     </div>
+
     <script>
+      let pageno = 1;
+      let limit = 3;
+      let maxlength;
+
       const receipeData = document.querySelector(".receipes-container");
 
       const receipedetails = ({
@@ -111,18 +161,18 @@
 
           src=${imageUrl}
 
-          /> 
+          /> <br>
 
           <div class="details">
 
-            <h3 class="receipe-id">${id}</h3>
+            
             <h3 class="receipe-name">${recipeName}</h3>
-            <h3 class="cusisine">${cuisine}</h3>
-            <h3 class="receipe-ingredients">${ingredients}</h3>
-            <h3 class="receipe-instructions">${instructions}</h3>
+            <h5 class="cusisine">Cuisine:${cuisine}</h5>
+            <p class="receipe-ingredients"><span class="ingredients">Ingredients</span>:${ingredients}</p>
+            <p class="receipe-instructions"><span class="instructions">Instructions</span>:${instructions}</p>
 
             
-            <button onclick="deletereceipe(${id})">Delete</button>
+            <button class="deleteButton" onclick="deletereceipe(${id})">Delete</button>
 
             </div>
 
@@ -131,21 +181,21 @@
 
       //searchuser
       function searchreceipe() {
-        console.log("searching receipe...");
+        console.log("searching recipe...");
 
         const search = document.querySelector(".search-receipe").value;
 
         fetch(
-          `https://64f6f41a9d7754084952d870.mockapi.io/Receipe?receipeName=${search}`,
+          `https://64f6f41a9d7754084952d870.mockapi.io/Receipe?recipeName=${search}`,
           {
             method: "GET",
           }
         )
           .then((res) => res.json())
-          .then((searchreceipes) => {
+          .then((searchrecipes) => {
             receipeData.innerHTML = "";
 
-            searchreceipes.forEach(receipedetails);
+            searchrecipes.forEach(receipedetails);
           });
       }
 
@@ -153,9 +203,9 @@
       //create-post
 
       function addreceipe() {
-        console.log("receipe added");
+        console.log("recipe added");
 
-        const name = document.querySelector(".receipe-name").value;
+        const recipeName = document.querySelector(".receipeName").value;
         const imageUrl = document.querySelector(".receipe-avatar").value;
         const cuisine = document.querySelector(".receipe-cuisine").value;
         const ingredients = document.querySelector(
@@ -166,7 +216,7 @@
         ).value;
 
         const data = {
-          name,
+          recipeName,
           imageUrl,
           cuisine,
           ingredients,
@@ -179,8 +229,9 @@
           headers: {
             "Content-type": "application/json",
           },
-        }).then(() => getReceipes());
-        console.log(recipeName, imageUrl);
+        })
+          .then(() => getReceipes())
+          .catch((error) => console.error("Error:", error));
       }
 
       //Delete
@@ -193,10 +244,63 @@
         }).then(() => getReceipes());
       }
 
-      function getReceipes() {
+      //edit
+
+      //pagenation
+
+      function prevPage() {
+        if (pageno == 1) {
+          return;
+        }
+
+        pageno--;
+
+        getReceipes();
+      }
+
+      function nextPage() {
+        console.log(maxlength);
+        if (pageno == maxlength) {
+          return;
+        }
+        pageno++;
+
+        getReceipes();
+      }
+
+      function totalReceipes() {
         fetch("https://64f6f41a9d7754084952d870.mockapi.io/Receipe", {
           method: "GET",
         })
+          .then((res) => res.json())
+          .then((receipes) => {
+            maxlength = Math.ceil(receipes.length / limit); // Use 'receipes.length' here
+            createButtons();
+          });
+      }
+      totalReceipes();
+
+      function createButtons() {
+        const button = document.querySelector(".page-button-container");
+        for (let i = 1; i <= maxlength; i++) {
+          button.innerHTML += `  <button onclick="nav(${i})">${i}</button>`;
+        }
+
+        nav(pageno);
+      }
+
+      function nav(pagenum) {
+        pageno = pagenum;
+        getReceipes();
+      }
+
+      function getReceipes() {
+        fetch(
+          `https://64f6f41a9d7754084952d870.mockapi.io/Receipe?page=${pageno}&limit=${limit}`,
+          {
+            method: "GET",
+          }
+        )
           .then((res) => res.json())
           .then((receipes) => {
             receipeData.innerHTML = "";
