@@ -275,12 +275,12 @@
           .then((res) => res.json())
           .then((receipes) => {
             maxlength = Math.ceil(receipes.length / limit); // Use 'receipes.length' here
-            createButtons();
+            navButtons();
           });
       }
       totalReceipes();
 
-      function createButtons() {
+      function navButtons() {
         const button = document.querySelector(".page-button-container");
         for (let i = 1; i <= maxlength; i++) {
           button.innerHTML += `  <button onclick="nav(${i})">${i}</button>`;
