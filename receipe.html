@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    body {
+      background: aliceblue;
+      font-family: Roboto, "sans-serif";
+      display: grid;
+      place-content: center;
+    }
+    .user {
+      display: flex;
+      background-color: white;
+      gap: 1rem;
+      padding: 0.8rem;
+      border-radius: 0.8rem;
+      box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    }
+
+    .receipe-pic {
+      height: 5rem;
+      aspect-ratio: 1 / 1;
+      border-radius: 50%;
+    }
+
+    .receipe-name {
+      margin-top: 0px;
+    }
+
+    .receipes-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+
+      max-width: 30rem;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .add-Receipe-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-width: 30rem;
+      margin: 1rem auto;
+    }
+
+    .add-Receipe-form * {
+      font-size: 1.2rem;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+  <body>
+    <h1>Welcome to Receipe Management System 🎊</h1>
+    <div class="add-Receipe-form">
+      <input class="search-receipe" type="text" placeholder="search-receipe" />
+      <button onclick="searchreceipe()">🔍Search🔎</button>
+
+      <input class=".receipe-name" type="text" placeholder="Name" />
+      <input class=".receipe-avatar" type="text" placeholder="Picture URL" />
+      <input class=".receipe-cuisine" type="text" placeholder="cusisine" />
+      <input
+        class=".receipe-ingredients"
+        type="text"
+        placeholder="receipe-ingredients"
+      />
+      <input
+        class="receipe-instructions"
+        type="text"
+        placeholder="receipe-instructions"
+      />
+
+      <button onclick=" addreceipe()">addreceipe</button>
+
+      <section class="receipes-container"></section>
+      <div class="buttons">
+        <button onclick="prevPage()"><</button>
+        <span class="page-button-container">
+          <!-- <button onclick="nav(1)">1</button>
+        <button onclick="nav(2)">2</button> -->
+        </span>
+
+        <button onclick="nextPage()">></button>
+      </div>
+    </div>
+    <script>
+      const receipeData = document.querySelector(".receipes-container");
+
+      const receipedetails = ({
+        id,
+        recipeName,
+        cuisine,
+        ingredients,
+        instructions,
+        imageUrl,
+      }) => {
+        receipeData.innerHTML += `<div class="receipe">
+
+          <img class="receipe-pic"
+
+          src=${imageUrl}
+
+          /> 
+
+          <div class="details">
+
+            <h3 class="receipe-id">${id}</h3>
+            <h3 class="receipe-name">${recipeName}</h3>
+            <h3 class="cusisine">${cuisine}</h3>
+            <h3 class="receipe-ingredients">${ingredients}</h3>
+            <h3 class="receipe-instructions">${instructions}</h3>
+
+            
+            <button onclick="deletereceipe(${id})">Delete</button>
+
+            </div>
+
+         </div>`;
+      };
+
+      //searchuser
+      function searchreceipe() {
+        console.log("searching receipe...");
+
+        const search = document.querySelector(".search-receipe").value;
+
+        fetch(
+          `https://64f6f41a9d7754084952d870.mockapi.io/Receipe?receipeName=${search}`,
+          {
+            method: "GET",
+          }
+        )
+          .then((res) => res.json())
+          .then((searchreceipes) => {
+            receipeData.innerHTML = "";
+
+            searchreceipes.forEach(receipedetails);
+          });
+      }
+
+      //Create Method
+      //create-post
+
+      function addreceipe() {
+        console.log("receipe added");
+
+        const name = document.querySelector(".receipe-name").value;
+        const imageUrl = document.querySelector(".receipe-avatar").value;
+        const cuisine = document.querySelector(".receipe-cuisine").value;
+        const ingredients = document.querySelector(
+          ".receipe-ingredients"
+        ).value;
+        const instructions = document.querySelector(
+          ".receipe-instructions"
+        ).value;
+
+        const data = {
+          name,
+          imageUrl,
+          cuisine,
+          ingredients,
+          instructions,
+        };
+
+        fetch("https://64f6f41a9d7754084952d870.mockapi.io/Receipe", {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: {
+            "Content-type": "application/json",
+          },
+        }).then(() => getReceipes());
+        console.log(recipeName, imageUrl);
+      }
+
+      //Delete
+      //delete method
+      function deletereceipe(id) {
+        console.log("receipe deleted..", id);
+
+        fetch(`https://64f6f41a9d7754084952d870.mockapi.io/Receipe/${id}`, {
+          method: "DELETE",
+        }).then(() => getReceipes());
+      }
+
+      function getReceipes() {
+        fetch("https://64f6f41a9d7754084952d870.mockapi.io/Receipe", {
+          method: "GET",
+        })
+          .then((res) => res.json())
+          .then((receipes) => {
+            receipeData.innerHTML = "";
+
+            receipes.forEach(receipedetails);
+          });
+      }
+
+      getReceipes();
+    </script>
+  </body>
+</html>
